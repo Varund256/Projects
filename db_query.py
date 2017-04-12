@@ -2,15 +2,15 @@ import os
 import argparse
 import cx_Oracle
 import json
-import datetime
-import getpass
-import tempfile
+from getpass import getpass
+from datetime import datetime
 from dicttoxml import dicttoxml
-from xml.dom.minidom import parseString
 from collections import OrderedDict
+from xml.dom.minidom import parseString
+from tempfile import NamedTemporaryFile
 
 def datetime_handler(x):
-	if isinstance(x, datetime.datetime):
+	if isinstance(x, datetime):
 		return x.isoformat()
 	raise TypeError("Unknow Type")
 
@@ -115,7 +115,7 @@ def interactive_inputs(args):
 			if args.user == '':
 				raise Exception ("Username can not be empty.")
 		if args.password is None:
-			args.password = getpass.getpass(prompt='DB password : ')
+			args.password = getpass(prompt='DB password : ')
 			if args.password == '':
 				raise Exception ("Password can not be empty.")
 		if args.query is None and args.file is None:
@@ -163,11 +163,11 @@ def main():
 			result_dict = generate_result(dataset)
 			if result_dict is None:
 				raise Exception ("Error while creating JSON or XML file.")
-			with tempfile.NamedTemporaryFile(suffix='.json', dir = inputs.output_directory, mode='w+t', delete=False) as f:
+			with NamedTemporaryFile(suffix='.json', dir = inputs.output_directory, mode='w+t', delete=False) as f:
 				f.write(result_dict['JSON'])
 			print('JSON file stored in \033[95m%s\033[0m'%f.name)
 			f.close()
-			with tempfile.NamedTemporaryFile(suffix='.xml', dir = inputs.output_directory, mode='w+t', delete=False) as f:
+			with NamedTemporaryFile(suffix='.xml', dir = inputs.output_directory, mode='w+t', delete=False) as f:
 				f.write(result_dict['XML'])
 			print('XML file stored in \033[95m%s\033[0m'%f.name)
 			f.close()
@@ -190,11 +190,11 @@ def main():
 				composit_result_dict['JSON'].append("%s\n"%(result_dict['JSON']))
 				composit_result_dict['XML'].append("%s\n"%(result_dict['XML']))
 
-			with tempfile.NamedTemporaryFile(suffix='.json', dir = inputs.output_directory, mode='w+t', delete=False) as f:
+			with NamedTemporaryFile(suffix='.json', dir = inputs.output_directory, mode='w+t', delete=False) as f:
 				f.writelines(composit_result_dict['JSON'])
 			print('JSON file stored in \033[95m%s\033[0m'%f.name)
 			f.close()
-			with tempfile.NamedTemporaryFile(suffix='.xml', dir = inputs.output_directory, mode='w+t', delete=False) as f:
+			with NamedTemporaryFile(suffix='.xml', dir = inputs.output_directory, mode='w+t', delete=False) as f:
 				f.writelines(composit_result_dict['XML'])
 			print('XML file stored in \033[95m%s\033[0m'%f.name)
 			f.close()
